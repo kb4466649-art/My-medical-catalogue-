@@ -1,0 +1,99 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>My Medical Catalogue – Medical Images &amp; Videos</title>
+<meta name="description" content="My Medical Catalogue: a shared digital catalogue of medical images and videos with descriptions, comments and likes.">
+<meta name="robots" content="index,follow"><link rel="canonical" href="https://YOUR-DOMAIN.netlify.app/">
+<meta property="og:type" content="website"><meta property="og:title" content="My Medical Catalogue"><meta property="og:description" content="Medical images and videos shared by our community."><meta property="og:url" content="https://YOUR-DOMAIN.netlify.app/"><meta property="og:image" content="https://YOUR-DOMAIN.netlify.app/icon-512.png">
+<meta name="twitter:card" content="summary"><meta name="theme-color" content="#0e7490">
+<link rel="manifest" href="manifest.json"><link rel="icon" href="icon-192.png"><link rel="apple-touch-icon" href="icon-192.png">
+<meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Medical Catalogue">
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"WebSite","name":"My Medical Catalogue","url":"https://YOUR-DOMAIN.netlify.app/"}</script>
+<style>
+:root{--c:#0e7490;--cols:2;--bg:#f4f8fa;--fg:#10262e;--cd:#fff;--bd:#dbe6ea}
+[data-t=d]{--bg:#0d1a1f;--fg:#e6f1f4;--cd:#16282f;--bd:#27414a}
+*{box-sizing:border-box}body{margin:0;font:15px system-ui,sans-serif;background:var(--bg);color:var(--fg);padding:env(safe-area-inset-top) 0 env(safe-area-inset-bottom)}
+[hidden]{display:none!important}button,input,textarea,select{font:inherit;color:inherit}
+button{background:var(--cd);border:1px solid var(--bd);border-radius:10px;padding:8px 12px;cursor:pointer}
+.pri{background:var(--c);color:#fff;border:0;width:100%}
+input,textarea,select{width:100%;padding:10px;margin:6px 0;border:1px solid var(--bd);border-radius:10px;background:var(--cd)}
+.screen{min-height:100vh;display:grid;place-content:center;gap:10px;text-align:center;padding:24px;max-width:380px;margin:auto}
+header{position:sticky;top:0;z-index:5;display:flex;gap:8px;align-items:center;padding:10px 14px;background:var(--c);color:#fff}
+header b{flex:1;font-size:17px}header button{background:#fff2;border:0;color:#fff}
+.bar,.tabs{padding:8px 14px}.tabs{display:flex;gap:6px;flex-wrap:wrap}.tabs .on{background:var(--c);color:#fff}
+#list{padding:0 14px 90px;gap:12px}.grid{display:grid;grid-template-columns:repeat(var(--cols),1fr)}
+.masonry{column-count:var(--cols)}.masonry .card{break-inside:avoid;margin-bottom:12px}
+.list{display:grid;grid-template-columns:1fr}.list .card{display:flex}.list .th{width:40%;flex:none}
+.card{background:var(--cd);border:1px solid var(--bd);border-radius:14px;overflow:hidden;cursor:pointer}
+.th{position:relative}.th img{width:100%;display:block;aspect-ratio:4/3;object-fit:cover}.th i{position:absolute;inset:0;display:grid;place-content:center;font-size:30px;color:#fff;font-style:normal;background:#0003}
+.cb{padding:10px}.cb h3{margin:0 0 2px;font-size:15px}.cb p{margin:6px 0;opacity:.8;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+#fab{position:fixed;right:18px;bottom:calc(18px + env(safe-area-inset-bottom));width:56px;height:56px;border-radius:50%;background:var(--c);color:#fff;font-size:28px;border:0;box-shadow:0 4px 14px #0004}
+dialog{width:min(560px,96vw);max-height:92vh;border:0;border-radius:16px;padding:0;background:var(--bg);color:var(--fg)}dialog::backdrop{background:#0008}
+.x{position:absolute;right:8px;top:8px;z-index:2}.pad{padding:14px}.big,dialog iframe{width:100%;display:block;max-height:60vh;object-fit:contain;aspect-ratio:16/9;border:0;background:#000}
+.row{display:flex;gap:8px;margin:8px 0}.row input{margin:0}.cmt{padding:6px 0;border-bottom:1px solid var(--bd)}
+.ar{display:flex;gap:6px;align-items:center;padding:6px 0;border-bottom:1px solid var(--bd)}.ar span{flex:1;overflow:hidden}
+.empty{text-align:center;opacity:.6}small,footer{opacity:.7}footer{text-align:center;padding:10px}a{color:var(--c)}
+#toast{position:fixed;left:50%;bottom:90px;transform:translateX(-50%);background:#222;color:#fff;padding:8px 14px;border-radius:20px;z-index:99}
+</style></head><body>
+<section id="gate" class="screen" hidden><h1>📖 My Medical Catalogue</h1><p>This catalogue is password protected.</p><input id="pw" type="password" placeholder="Enter password" autocomplete="off"><button class="pri" onclick="enter()">Enter catalogue</button><a href="privacy.html">Privacy policy</a></section>
+<section id="login" class="screen" hidden><h1>📖 My Medical Catalogue</h1><p>Sign in with your Google account to view, post, like and comment.</p><button class="pri" onclick="signIn()">Continue with Google</button><small>By signing in you agree to our <a href="privacy.html">Privacy Policy</a>.</small></section>
+<div id="app" hidden>
+<header><b id="logo">📖 My Medical Catalogue</b><button onclick="cfgM()" aria-label="Appearance">🎨</button><button id="meB" onclick="meM()">👤</button></header>
+<div class="bar"><input id="q" type="search" placeholder="Search images, videos, descriptions…" oninput="S.q=this.value;render()"></div>
+<nav class="tabs" id="tabs"></nav><main id="list" class="grid"></main>
+<button id="fab" onclick="newPost()" aria-label="New post">＋</button><footer><a href="privacy.html">Privacy policy</a></footer></div>
+<dialog id="dlg"></dialog><div id="toast" hidden></div>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
+<script>
+const SB_URL='YOUR_SUPABASE_URL',SB_KEY='YOUR_SUPABASE_ANON_KEY';
+const sb=window.supabase.createClient(SB_URL,SB_KEY),$=s=>document.querySelector(s),dlg=$('#dlg');
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+let S={user:null,me:null,posts:[],mine:new Set(),tab:'all',q:'',file:null,loc:null},cfg=Object.assign({color:'#0e7490',cols:2,layout:'grid',dark:false},JSON.parse(localStorage.cfg||'{}')),inst,taps=0;
+function applyCfg(){const r=document.documentElement;r.style.setProperty('--c',cfg.color);r.style.setProperty('--cols',cfg.cols);r.dataset.t=cfg.dark?'d':'l';$('#list').className=cfg.layout;localStorage.cfg=JSON.stringify(cfg)}
+function toast(m){const t=$('#toast');t.textContent=m;t.hidden=false;setTimeout(()=>t.hidden=true,2500)}
+function show(id){['gate','login','app'].forEach(x=>$('#'+x).hidden=x!=id)}
+function modal(h){dlg.innerHTML='<button class="x" onclick="dlg.close()">✕</button>'+h;if(!dlg.open)dlg.showModal()}
+const name=()=>S.me?.name||S.user.email.split('@')[0];
+async function boot(){applyCfg();if(localStorage.gate!=='ok')return show('gate');const{data:{session}}=await sb.auth.getSession();session?init(session.user):show('login')}
+sb.auth.onAuthStateChange((e,s)=>{if(e==='SIGNED_IN'&&localStorage.gate==='ok'&&!S.user)init(s.user)});
+async function enter(){const{data}=await sb.rpc('check_access',{pw:$('#pw').value});if(data===true){localStorage.gate='ok';boot()}else toast('Wrong password')}
+const signIn=()=>sb.auth.signInWithOAuth({provider:'google',options:{redirectTo:location.origin}});
+async function init(u){S.user=u;S.me=(await sb.from('profiles').select('*').eq('id',u.id).single()).data;show('app');
+$('#meB').innerHTML=u.user_metadata?.avatar_url?`<img src="${esc(u.user_metadata.avatar_url)}" width="24" height="24" style="border-radius:50%;vertical-align:middle" alt="me">`:'👤';
+$('#tabs').innerHTML=['all','image','video'].map(t=>`<button data-t="${t}" onclick="S.tab='${t}';render()">${t=='all'?'All':t=='image'?'Images':'Videos'}</button>`).join('');
+$('#logo').onclick=()=>++taps>=5&&(taps=0,openAdmin());await load();const p=new URLSearchParams(location.search).get('p');if(p)openPost(+p);if(location.hash=='#admin')openAdmin()}
+async function load(){const{data,error}=await sb.from('posts').select('*,likes(count),comments(count)').order('created_at',{ascending:false});if(error)return toast(error.message);S.posts=data;const l=await sb.from('likes').select('post_id').eq('user_id',S.user.id);S.mine=new Set((l.data||[]).map(x=>x.post_id));render()}
+const thumb=p=>p.kind=='video'?`https://img.youtube.com/vi/${p.youtube_id}/hqdefault.jpg`:p.image_url;
+function render(){const q=S.q.toLowerCase();document.querySelectorAll('#tabs button').forEach(b=>b.className=b.dataset.t==S.tab?'on':'');
+const a=S.posts.filter(p=>(S.tab=='all'||p.kind==S.tab)&&(!q||[p.title,p.description,p.author_name].join(' ').toLowerCase().includes(q)));
+$('#list').innerHTML=a.map(p=>`<article class="card" onclick="openPost(${p.id})"><div class="th"><img loading="lazy" src="${esc(thumb(p))}" alt="${esc(p.title)}">${p.kind=='video'?'<i>▶</i>':''}</div><div class="cb"><h3>${esc(p.title)}</h3><small>by ${esc(p.author_name)}</small><p>${esc(p.description)}</p><span>${S.mine.has(p.id)?'❤️':'🤍'} ${p.likes[0].count} · 💬 ${p.comments[0].count}</span></div></article>`).join('')||'<p class="empty">Nothing found yet.</p>'}
+const cmt=x=>`<div class="cmt"><b>${esc(x.user_name)}</b> ${esc(x.body)}</div>`;
+async function openPost(id){const p=S.posts.find(x=>x.id==id);if(!p)return;const{data:c}=await sb.from('comments').select('*').eq('post_id',id).order('created_at');
+modal(`${p.kind=='video'?`<iframe src="https://www.youtube-nocookie.com/embed/${esc(p.youtube_id)}" allowfullscreen allow="encrypted-media;picture-in-picture"></iframe>`:`<img class="big" src="${esc(p.image_url)}" alt="${esc(p.title)}">`}<div class="pad"><h2>${esc(p.title)}</h2><small>by ${esc(p.author_name)} · ${new Date(p.created_at).toLocaleDateString()}${p.lat?` · <a target="_blank" rel="noopener" href="https://maps.google.com/?q=${p.lat},${p.lng}">📍 map</a>`:''}</small><p>${esc(p.description)}</p><div class="row"><button id="hb" onclick="like(${id})">${S.mine.has(id)?'❤️':'🤍'} ${p.likes[0].count}</button><button onclick="share(${id})">🔗 Share</button></div><h4>Comments (${c.length})</h4><div>${c.map(cmt).join('')}</div><div class="row"><input id="ci" placeholder="Write a comment…"><button onclick="addC(${id})">Post</button></div></div>`)}
+async function like(id){const p=S.posts.find(x=>x.id==id),m=S.mine.has(id);if(m){await sb.from('likes').delete().match({post_id:id,user_id:S.user.id});S.mine.delete(id);p.likes[0].count--}else{await sb.from('likes').insert({post_id:id,user_id:S.user.id});S.mine.add(id);p.likes[0].count++}$('#hb').textContent=(S.mine.has(id)?'❤️':'🤍')+' '+p.likes[0].count;render()}
+async function addC(id){const b=$('#ci').value.trim();if(!b)return;const r=await sb.from('comments').insert({post_id:id,user_id:S.user.id,user_name:name(),body:b});if(r.error)return toast(r.error.message);S.posts.find(x=>x.id==id).comments[0].count++;openPost(id);render()}
+async function share(id){const p=S.posts.find(x=>x.id==id),u=location.origin+'/?p='+id;try{if(navigator.share)await navigator.share({title:p.title,text:p.title+' – My Medical Catalogue',url:u});else{await navigator.clipboard.writeText(u);toast('Link copied')}}catch{}}
+function newPost(){S.file=S.loc=null;modal(`<div class="pad"><h2>New post</h2><div class="row"><button onclick="$('#cam').click()">📷 Camera</button><button onclick="$('#gal').click()">🖼️ Gallery</button></div><input id="cam" type="file" accept="image/*" capture="environment" hidden onchange="pick(this)"><input id="gal" type="file" accept="image/*" hidden onchange="pick(this)"><img id="pv" class="big" hidden alt="preview"><input id="t" placeholder="Title"><textarea id="d" rows="3" placeholder="Description (shown under your name)"></textarea><button onclick="gps()">📍 Add location <span id="gs"></span></button><p></p><button class="pri" onclick="publish()">Publish</button></div>`)}
+function pick(i){S.file=i.files[0];if(S.file){$('#pv').src=URL.createObjectURL(S.file);$('#pv').hidden=false}}
+function gps(){navigator.geolocation?.getCurrentPosition(p=>{S.loc={lat:+p.coords.latitude.toFixed(5),lng:+p.coords.longitude.toFixed(5)};$('#gs').textContent='✓'},()=>toast('Location permission denied'))}
+const shrink=f=>new Promise(r=>{const i=new Image();i.onload=()=>{const k=Math.min(1,1600/Math.max(i.width,i.height)),c=document.createElement('canvas');c.width=i.width*k;c.height=i.height*k;c.getContext('2d').drawImage(i,0,0,c.width,c.height);c.toBlob(r,'image/jpeg',.85)};i.src=URL.createObjectURL(f)});
+async function publish(){const t=$('#t').value.trim();if(!S.file||!t)return toast('Add a photo and title');const path=`${S.user.id}/${Date.now()}.jpg`,u=await sb.storage.from('images').upload(path,await shrink(S.file),{contentType:'image/jpeg'});if(u.error)return toast(u.error.message);
+const r=await sb.from('posts').insert({kind:'image',title:t,description:$('#d').value.trim(),image_url:sb.storage.from('images').getPublicUrl(path).data.publicUrl,author_id:S.user.id,author_name:name(),lat:S.loc?.lat,lng:S.loc?.lng});if(r.error)return toast(r.error.message);dlg.close();load()}
+function cfgM(){modal(`<div class="pad"><h2>Appearance</h2><label>Colour <input type="color" value="${cfg.color}" oninput="cfg.color=this.value;applyCfg()"></label><label>Columns: <input type="range" min="1" max="4" value="${cfg.cols}" oninput="cfg.cols=+this.value;applyCfg()"></label><label>Layout <select onchange="cfg.layout=this.value;applyCfg()">${['grid','masonry','list'].map(l=>`<option ${l==cfg.layout?'selected':''}>${l}</option>`).join('')}</select></label><label><input type="checkbox" style="width:auto" ${cfg.dark?'checked':''} onchange="cfg.dark=this.checked;applyCfg()"> Dark mode</label>${inst?'<button class="pri" onclick="inst.prompt()">⬇ Install app</button>':'<small>To install: browser menu → “Add to Home screen”.</small>'}</div>`)}
+function meM(){modal(`<div class="pad"><h2>${esc(name())}</h2><small>${esc(S.user.email)}</small><p></p><button onclick="sb.auth.signOut().then(()=>location.reload())">Sign out</button></div>`)}
+async function openAdmin(t='posts'){if(S.me?.role!='admin')return toast('Admins only');let h='';
+if(t=='posts')h=S.posts.map(p=>`<div class="ar"><span>${p.kind=='video'?'▶':'🖼️'} ${esc(p.title)}</span><button onclick="editP(${p.id})">Edit</button><button onclick="delP(${p.id})">🗑</button></div>`).join('');
+if(t=='video')h=`<input id="yu" placeholder="YouTube link"><input id="yt" placeholder="Title"><textarea id="yd" rows="3" placeholder="Description"></textarea><button class="pri" onclick="addV()">Publish video</button>`;
+if(t=='users')h=((await sb.from('profiles').select('*').order('created_at',{ascending:false})).data||[]).map(u=>`<div class="ar"><span>${esc(u.name)} <small>${esc(u.email)} · ${u.role}</small></span></div>`).join('');
+if(t=='comments')h=((await sb.from('comments').select('*').order('created_at',{ascending:false}).limit(100)).data||[]).map(c=>`<div class="ar"><span><b>${esc(c.user_name)}</b> ${esc(c.body)}</span><button onclick="delC(${c.id})">🗑</button></div>`).join('');
+if(t=='access')h=`<input id="np" type="password" placeholder="New catalogue password"><button class="pri" onclick="setPw()">Change password</button>`;
+modal(`<div class="pad"><h2>Admin panel</h2><div class="tabs">${['posts','video','users','comments','access'].map(x=>`<button class="${x==t?'on':''}" onclick="openAdmin('${x}')">${x}</button>`).join('')}</div>${h}</div>`)}
+async function editP(id){const p=S.posts.find(x=>x.id==id),t=prompt('Title',p.title);if(t==null)return;const d=prompt('Description',p.description||'');if(d==null)return;const r=await sb.from('posts').update({title:t,description:d}).eq('id',id);r.error?toast(r.error.message):(await load(),openAdmin())}
+async function delP(id){if(!confirm('Delete this post?'))return;await sb.from('posts').delete().eq('id',id);await load();openAdmin()}
+async function delC(id){await sb.from('comments').delete().eq('id',id);openAdmin('comments')}
+async function addV(){const m=$('#yu').value.match(/(?:v=|youtu\.be\/|embed\/|shorts\/)([\w-]{11})/),t=$('#yt').value.trim();if(!m||!t)return toast('Valid YouTube link and title needed');const r=await sb.from('posts').insert({kind:'video',title:t,description:$('#yd').value.trim(),youtube_id:m[1],author_id:S.user.id,author_name:name()});r.error?toast(r.error.message):(await load(),openAdmin())}
+async function setPw(){const r=await sb.rpc('set_access_password',{pw:$('#np').value});toast(r.error?r.error.message:'Password changed')}
+addEventListener('beforeinstallprompt',e=>{e.preventDefault();inst=e});
+if('serviceWorker'in navigator)navigator.serviceWorker.register('sw.js');
+boot();
+</script></body></html>
